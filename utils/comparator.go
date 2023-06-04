@@ -1,6 +1,6 @@
 package utils
 
-// Comparator will make type assertion and panic if it fails
+// Comparator will make type assertion and panic if it fails.
 // It will return -1 if a < b, 0 if a == b, 1 if a > b
 type Comparator func(a, b interface{}) int
 
