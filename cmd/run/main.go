@@ -30,6 +30,8 @@ func main() {
 	bst.Insert("peach", desc{6, "this is a peach"})
 	bst.Insert("watermelon", desc{7, "this is a watermelon"})
 	bst.PrintBST()
+	bst.Delete("orange")
+	bst.PrintBST()
 
 }
 

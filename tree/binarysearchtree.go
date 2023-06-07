@@ -53,21 +53,6 @@ func (t *BinarySearchTree) Insert(key, val interface{}) {
 	t.length++
 }
 
-func (t *BinarySearchTree) search(key interface{}) *node {
-	cur := t.root
-	for cur != nil {
-		if t.comparator(key, cur.key) == 0 {
-			return cur
-		}
-		if t.comparator(key, cur.key) == -1 {
-			cur = cur.left
-		} else if t.comparator(key, cur.key) == 1 {
-			cur = cur.right
-		}
-	}
-	return nil
-}
-
 func (t *BinarySearchTree) GetNode(value interface{}) *node {
 	return t.search(value)
 }
@@ -78,6 +63,94 @@ func (t *BinarySearchTree) GetNodeValue(key interface{}) (value interface{}, fou
 		return n.value, true
 	}
 	return nil, false
+}
+
+func (t *BinarySearchTree) GetNodeAndParent(key interface{}) (node, parent *node) {
+	if t.length == 0 {
+		return nil, nil
+	}
+	if t.length == 1 || t.comparator(key, t.root.key) == 0 {
+		return t.root, t.root
+	}
+	return t.searchWithParent(key)
+}
+
+func isLeaf(n *node) bool {
+	return n.left == nil && n.right == nil
+}
+
+// TODO
+// fix bug when removing parent
+// change func to return *node
+func (t *BinarySearchTree) Delete(key interface{}) {
+	n, p := t.GetNodeAndParent(key)
+
+	if n == nil {
+		return
+	}
+
+	if t.Len() == 1 && p == nil {
+		t.root = nil
+		return
+	}
+
+	if isLeaf(n) {
+		if p.left == n {
+			p.left = nil
+		} else {
+			p.right = nil
+		}
+		return
+	}
+
+	if n.left != nil && n.right != nil {
+		min, minParent := t.findMinWithParent(n.right)
+		fmt.Println("A")
+
+		if minParent.left == min {
+			minParent.left = nil
+		} else {
+			minParent.right = nil
+		}
+
+		if p.left == n {
+			p.left = min
+		} else {
+			p.right = min
+		}
+
+		if n.left != min {
+			min.left = n.left
+		}
+		if n.right != min {
+			min.right = n.right
+		}
+
+		n.left = nil
+		n.right = nil
+		fmt.Println("B")
+
+		return
+	}
+
+	// left or right has data
+	if n.left != nil {
+		if p.left == n {
+			p.left = n.left
+		} else {
+			p.right = n.left
+		}
+	} else {
+		if p.left == n {
+			p.left = n.right
+		} else {
+			p.right = n.right
+		}
+	}
+}
+
+func (t *BinarySearchTree) PrintBST() {
+	printBT("", t.root, false)
 }
 
 func printBT(prefix string, node *node, isLeft bool) {
@@ -104,10 +177,6 @@ func getBranchPrefix(isLeft bool) string {
 		return "│   "
 	}
 	return "    "
-}
-
-func (t *BinarySearchTree) PrintBST() {
-	printBT("", t.root, false)
 }
 
 func (t *BinarySearchTree) assertKeyType(key interface{}) interface{} {
@@ -148,3 +217,91 @@ func insertNode(newNode, curNode *node, comparator utils.Comparator) {
 		insertNode(newNode, curNode.right, comparator)
 	}
 }
+
+func (t *BinarySearchTree) search(key interface{}) *node {
+	cur := t.root
+	for cur != nil {
+		if t.comparator(key, cur.key) == 0 {
+			return cur
+		}
+		if t.comparator(key, cur.key) == -1 {
+			cur = cur.left
+		} else if t.comparator(key, cur.key) == 1 {
+			cur = cur.right
+		}
+	}
+	return nil
+}
+
+func (t *BinarySearchTree) searchWithParent(key interface{}) (node, parent *node) {
+	cur := t.root
+	par := cur
+	for cur != nil {
+		if t.comparator(key, cur.key) == 0 {
+			return cur, par
+		}
+		if t.comparator(key, cur.key) == -1 {
+			par = cur
+			cur = cur.left
+		} else if t.comparator(key, cur.key) == 1 {
+			par = cur
+			cur = cur.right
+		}
+	}
+	return nil, nil
+}
+
+// find min with parent
+func (t *BinarySearchTree) findMinWithParent(n *node) (node, parent *node) {
+	cur := n
+	par := cur
+	for cur.left != nil {
+		par = cur
+		cur = cur.left
+	}
+	return cur, par
+}
+
+// find max with parent
+func (t *BinarySearchTree) findMaxWithParent(n *node) (node, parent *node) {
+	cur := n
+	par := cur
+	for cur.right != nil {
+		par = cur
+		cur = cur.right
+	}
+	return cur, par
+}
+
+// find min node
+func (t *BinarySearchTree) FindMin() *node {
+	cur := t.root
+	for cur.left != nil {
+		cur = cur.left
+	}
+	return cur
+}
+
+// find max node
+func (t *BinarySearchTree) FindMax() *node {
+	cur := t.root
+	for cur.right != nil {
+		cur = cur.right
+	}
+	return cur
+}
+
+// func (t *BinarySearchTree) invertHelper(n *node) *node {
+// 	if n == nil {
+// 		return nil
+// 	}
+// 	if n.left != nil {
+// 		t.invertHelper(n.left)
+// 	}
+// 	if n.right != nil {
+// 		t.invertHelper(n.right)
+// 	}
+
+// 	n.left, n.right = n.right, n.left
+// 	return n
+// }
