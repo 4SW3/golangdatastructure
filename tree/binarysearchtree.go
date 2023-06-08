@@ -75,78 +75,104 @@ func (t *BinarySearchTree) GetNodeAndParent(key interface{}) (node, parent *node
 	return t.searchWithParent(key)
 }
 
-func isLeaf(n *node) bool {
+func (t *BinarySearchTree) hasOnlyRoot(n1, n2 *node) bool {
+	return t.length == 1 && n1 == n2
+}
+
+func (t *BinarySearchTree) isRoot(n *node) bool {
+	return n == t.root
+}
+
+func (t *BinarySearchTree) isLeaf(n *node) bool {
 	return n.left == nil && n.right == nil
 }
 
-// TODO
-// fix bug when removing parent
-// change func to return *node
-func (t *BinarySearchTree) Delete(key interface{}) {
-	n, p := t.GetNodeAndParent(key)
+func (t *BinarySearchTree) hasOneChild(n *node) bool {
+	return (n.left != nil && n.right == nil) || (n.left == nil && n.right != nil)
+}
 
-	if n == nil {
-		return
+func (t *BinarySearchTree) hasTwoChildren(n *node) bool {
+	return n.left != nil && n.right != nil
+}
+
+func (t *BinarySearchTree) deleteNode(key interface{}) *node {
+	node, parent := t.GetNodeAndParent(key)
+	if node == nil {
+		return nil
 	}
 
-	if t.Len() == 1 && p == nil {
+	if t.hasOnlyRoot(node, parent) {
 		t.root = nil
-		return
+		return node
 	}
 
-	if isLeaf(n) {
-		if p.left == n {
-			p.left = nil
+	if t.isLeaf(node) {
+		if parent.left == node {
+			parent.left = nil
 		} else {
-			p.right = nil
+			parent.right = nil
 		}
-		return
+		return node
 	}
 
-	if n.left != nil && n.right != nil {
-		min, minParent := t.findMinWithParent(n.right)
-		fmt.Println("A")
+	if t.hasTwoChildren(node) {
+		min, minP := t.findMinWithParent(node.right)
 
-		if minParent.left == min {
-			minParent.left = nil
+		// replace node with min
+		if node.left != min {
+			min.left = node.left
+		}
+		if node.right != min {
+			min.right = node.right
+		}
+
+		// remove pointer from minP to min
+		if minP.left == min {
+			minP.left = nil
 		} else {
-			minParent.right = nil
+			minP.right = nil
 		}
 
-		if p.left == n {
-			p.left = min
+		// replace parent pointer to node with min
+		if t.isRoot(node) {
+			t.root = min
 		} else {
-			p.right = min
+			if parent.left == node {
+				parent.left = min
+			} else {
+				parent.right = min
+			}
 		}
 
-		if n.left != min {
-			min.left = n.left
-		}
-		if n.right != min {
-			min.right = n.right
-		}
-
-		n.left = nil
-		n.right = nil
-		fmt.Println("B")
-
-		return
+		return node
 	}
 
-	// left or right has data
-	if n.left != nil {
-		if p.left == n {
-			p.left = n.left
+	if t.hasOneChild(node) {
+		if node.left != nil {
+			if parent.left == node {
+				parent.left = node.left
+			} else {
+				parent.right = node.left
+			}
 		} else {
-			p.right = n.left
+			if parent.left == node {
+				parent.left = node.right
+			} else {
+				parent.right = node.right
+			}
 		}
-	} else {
-		if p.left == n {
-			p.left = n.right
-		} else {
-			p.right = n.right
-		}
+		return node
 	}
+
+	return nil
+}
+
+func (t *BinarySearchTree) Delete(key interface{}) *node {
+	if n := t.deleteNode(key); n != nil {
+		t.length--
+		return &node{n.key, n.value, nil, nil}
+	}
+	return nil
 }
 
 func (t *BinarySearchTree) PrintBST() {

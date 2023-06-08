@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/4d3v/golangdatastructure/tree"
 )
 
@@ -26,13 +28,16 @@ func main() {
 	bst.Insert("banana", desc{2, "this is a banana"})
 	bst.Insert("apple", desc{3, "this is an apple"})
 	bst.Insert("cherry", desc{4, "this is a cherry"})
+
+	bst.Insert("cherryx", desc{41, "this is a cherry"})
+	bst.Insert("cherra", desc{42, "this is a cherry"})
+
 	bst.Insert("pineapple", desc{5, "this is a pineapple"})
 	bst.Insert("peach", desc{6, "this is a peach"})
 	bst.Insert("watermelon", desc{7, "this is a watermelon"})
 	bst.PrintBST()
-	bst.Delete("orange")
+	fmt.Println(bst.Delete("banana"))
 	bst.PrintBST()
-
 }
 
 // └──8
