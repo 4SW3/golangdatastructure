@@ -3,6 +3,7 @@ package tree
 import (
 	"fmt"
 
+	"github.com/4d3v/golangdatastructure/queue"
 	"github.com/4d3v/golangdatastructure/utils"
 )
 
@@ -10,6 +11,14 @@ const (
 	INT    = iota // 0
 	STRING        // 1
 )
+
+const (
+	PreOrder TraversalType = iota
+	InOrder
+	PostOrder
+)
+
+type TraversalType int
 
 type (
 	BinarySearchTree struct {
@@ -175,6 +184,86 @@ func (t *BinarySearchTree) Delete(key interface{}) *node {
 	return nil
 }
 
+func (t *BinarySearchTree) BFS() []interface{} {
+	var data []interface{}
+	q := queue.New()
+	q.Enqueue(t.root)
+
+	for q.Len() > 0 {
+		n := q.Dequeue().(*node)
+		data = append(data, n.key)
+
+		if n.left != nil {
+			q.Enqueue(n.left)
+		}
+		if n.right != nil {
+			q.Enqueue(n.right)
+		}
+	}
+
+	return data
+}
+
+func (t *BinarySearchTree) DFSPreOrder() []interface{} {
+	var visited []interface{}
+	n := t.root
+
+	// var traverse func(n *node)
+	// traverse = func(n *node) {
+	// 	visited = append(visited, n.key)
+	// 	if n.left != nil {
+	// 		traverse(n.left)
+	// 	}
+	// 	if n.right != nil {
+	// 		traverse(n.right)
+	// 	}
+	// }
+	// traverse(n)
+	traverse(n, PreOrder, &visited)
+
+	return visited
+}
+
+func (t *BinarySearchTree) DFSInOrder() []interface{} {
+	var visited []interface{}
+	n := t.root
+
+	// var traverse func(n *node)
+	// traverse = func(n *node) {
+	// 	if n.left != nil {
+	// 		traverse(n.left)
+	// 	}
+	// 	visited = append(visited, n.key)
+	// 	if n.right != nil {
+	// 		traverse(n.right)
+	// 	}
+	// }
+	// traverse(r)
+	traverse(n, InOrder, &visited)
+
+	return visited
+}
+
+func (t *BinarySearchTree) DFSPostOrder() []interface{} {
+	var visited []interface{}
+	n := t.root
+
+	// var traverse func(n *node)
+	// traverse = func(n *node) {
+	// 	if n.left != nil {
+	// 		traverse(n.left)
+	// 	}
+	// 	if n.right != nil {
+	// 		traverse(n.right)
+	// 	}
+	// 	visited = append(visited, n.key)
+	// }
+	// traverse(r)
+	traverse(n, PostOrder, &visited)
+
+	return visited
+}
+
 func (t *BinarySearchTree) PrintBST() {
 	printBT("", t.root, false)
 }
@@ -315,6 +404,29 @@ func (t *BinarySearchTree) FindMax() *node {
 		cur = cur.right
 	}
 	return cur
+}
+
+func traverse(n *node, t TraversalType, visited *[]interface{}) {
+	if n == nil {
+		return
+	}
+
+	switch t {
+	case PreOrder:
+		*visited = append(*visited, n.key)
+		traverse(n.left, t, visited)
+		traverse(n.right, t, visited)
+
+	case InOrder:
+		traverse(n.left, t, visited)
+		*visited = append(*visited, n.key)
+		traverse(n.right, t, visited)
+
+	case PostOrder:
+		traverse(n.left, t, visited)
+		traverse(n.right, t, visited)
+		*visited = append(*visited, n.key)
+	}
 }
 
 // func (t *BinarySearchTree) invertHelper(n *node) *node {
