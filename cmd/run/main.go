@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/4d3v/golangdatastructure/tree"
+	"github.com/4d3v/golangdatastructure/utils/intsorting"
 )
 
 type desc struct {
@@ -33,16 +33,31 @@ func main() {
 	// bst.Insert("peach", desc{6, "this is a peach"})
 	// bst.Insert("watermelon", desc{7, "this is a watermelon"})
 
-	bst := tree.IntBST()
-	bst.Insert(15, desc{1, "Number"})
-	bst.Insert(1, desc{2, "Number"})
-	bst.Insert(76, desc{3, "Number"})
-	bst.Insert(7, desc{4, "Number"})
-	bst.Insert(56, desc{5, "Number"})
-	bst.Insert(80, desc{6, "Number"})
-	bst.Insert(19, desc{7, "Number"})
-	bst.Insert(65, desc{8, "Number"})
-	fmt.Println(bst.DFSPostOrder())
+	// bst := tree.IntBST()
+	// bst.Insert(15, desc{1, "Number"})
+	// bst.Insert(1, desc{2, "Number"})
+	// bst.Insert(76, desc{3, "Number"})
+	// bst.Insert(7, desc{4, "Number"})
+	// bst.Insert(56, desc{5, "Number"})
+	// bst.Insert(80, desc{6, "Number"})
+	// bst.Insert(19, desc{7, "Number"})
+	// bst.Insert(65, desc{8, "Number"})
+	// fmt.Println(bst.DFSPostOrder())
+
+	nums := []int{4, 3, 5, 3, 43, 232, 4, 34, 232, 32, 4, 35, 34, 23, 2, 453, 546, 75, 67, 4342, 32}
+	fmt.Println(nums)
+	fmt.Println(intsorting.InsertionSort(nums))
+	fmt.Println(nums)
+
+	fmt.Println()
+
+	nums2 := []int{0, -10, 7, -3, 4}
+	fmt.Println(nums2)
+	fmt.Println(intsorting.InsertionSort(nums2))
+	fmt.Println(nums2)
+
+	// sorted -> {2, 3, 3, 4, 4, 4, 5, 23, 32, 32, 34, 34, 35, 43, 67, 75, 232, 232, 453, 546, 4342}
+	// {0, -10, 7, -3, 4}; sorted -> {-10, -3, 0, 4, 7}
 }
 
 // └──8
